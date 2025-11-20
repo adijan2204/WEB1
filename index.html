@@ -455,72 +455,152 @@
 
   <!-- Component Scripts -->
   <script>
+   
 
-         
+    // ======== Feed Manager ========
+    class FeedManager {
+      constructor(dataManager) {
+        this.dataManager = dataManager;
+        this.feed = document.getElementById('feed');
+        this.activeRole = 'all';
+        this.filteredItems = [];
+        this.visibleCount = 4; // Start with 4 visible items
+        this.init();
+      }
 
-    // ======== Popup Manager ========
-    class PopupManager {
-      static init() {
-        this.popup = document.getElementById('itemPopup');
-        this.closePopup = document.getElementById('closePopup');
-        this.popupImage = document.getElementById('popupImage');
-        
-        this.closePopup.addEventListener('click', () => this.close());
-        this.popup.addEventListener('click', (e) => {
-          if (e.target === this.popup) this.close();
+      init() {
+        this.setupEventListeners();
+        this.filter('all');
+      }
+
+      setupEventListeners() {
+        // Role buttons (artist, writer, etc.)
+        document.querySelectorAll('[data-role]').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const role = e.target.getAttribute('data-role');
+            this.filter(role);
+          });
+        });
+
+        // Load more button
+        document.getElementById('loadMoreBtn').addEventListener('click', () => {
+          this.loadMore();
         });
       }
 
-      static open(item) {
-        this.popupImage.src = item.image;
-        this.popupImage.alt = item.title;
-        this.popup.style.display = 'flex';
+      filter(role) {
+        this.activeRole = role;
+        this.visibleCount = 4; // Reset to 4 when filter changes
+        this.filteredItems = role === 'all' 
+          ? this.dataManager.state.feed 
+          : this.dataManager.state.feed.filter(item => item.role === role);
+
+        // Update active role label
+        document.getElementById('activeRoleLabel').textContent = role === 'all' ? 'All' : role.charAt(0).toUpperCase() + role.slice(1);
+
+        // Update active filter buttons
+        document.querySelectorAll('.filter-btn-glow').forEach(btn => {
+          btn.classList.toggle('active', btn.getAttribute('data-role') === role);
+        });
+
+        this.render();
       }
 
-      static close() {
-        this.popup.style.display = 'none';
-      }
-    }
-
-    // ======== Time-based Greeting ========
-    class GreetingManager {
-      static init() {
-        this.updateGreeting();
-        // Update greeting every minute to handle transitions
-        setInterval(() => this.updateGreeting(), 60000);
-      }
-
-      static updateGreeting() {
-        const hour = new Date().getHours();
-        let greeting;
+      render() {
+        this.feed.innerHTML = '';
+        const itemsToShow = this.filteredItems.slice(0, this.visibleCount);
         
-        if (hour >= 5 && hour < 12) {
-          greeting = "Good Morning";
-        } else if (hour >= 12 && hour < 17) {
-          greeting = "Good Afternoon";
-        } else if (hour >= 17 && hour < 21) {
-          greeting = "Good Evening";
+        itemsToShow.forEach(itemData => {
+          const item = this.createFeedItem(itemData);
+          this.feed.appendChild(item);
+        });
+
+        // Show/hide load more button
+        const loadMoreContainer = document.getElementById('loadMoreContainer');
+        if (this.visibleCount < this.filteredItems.length) {
+          loadMoreContainer.classList.remove('hidden');
         } else {
-          greeting = "Good Night";
+          loadMoreContainer.classList.add('hidden');
         }
+      }
 
-        const welcomeEl = document.getElementById('welcomeText');
-        
-        // Reset the typewriter animation with the new text
-        welcomeEl.classList.remove('typewriter');
-        welcomeEl.innerText = greeting;
-        
-        // Trigger reflow to restart the animation
-        void welcomeEl.offsetWidth;
-        
-        // Re-add the typewriter class to start the animation on the new text
-        welcomeEl.classList.add('typewriter');
+      createFeedItem(itemData) {
+        const item = document.createElement('div');
+        item.className = 'group cursor-pointer';
+        item.innerHTML = `
+          <div class="aspect-square overflow-hidden rounded-lg bg-white/5">
+            <img src="${itemData.image}" alt="${itemData.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
+          </div>
+          <div class="mt-2 text-sm text-center">${itemData.title}</div>
+        `;
+
+        item.addEventListener('click', () => PopupManager.open(itemData));
+
+        return item;
+      }
+
+      loadMore() {
+        // Increase visible count by 4, but don't exceed total items
+        this.visibleCount = Math.min(this.visibleCount + 4, this.filteredItems.length);
+        this.render();
       }
     }
 
-    
+    // ======== Comments Manager ========
+    class CommentsManager {
+      constructor(dataManager) {
+        this.dataManager = dataManager;
+        this.commentsList = document.getElementById('commentsList');
+        this.cName = document.getElementById('cName');
+        this.cText = document.getElementById('cText');
+        this.postComment = document.getElementById('postComment');
+        this.clearComments = document.getElementById('clearComments');
+        this.init();
+      }
 
-    
+      init() {
+        this.setupEventListeners();
+        this.renderComments();
+      }
+
+      setupEventListeners() {
+        this.postComment.addEventListener('click', () => this.addComment());
+        this.clearComments.addEventListener('click', () => this.clearAllComments());
+      }
+
+      renderComments() {
+        this.commentsList.innerHTML = '';
+        this.dataManager.state.comments.forEach(comment => {
+          const commentEl = document.createElement('div');
+          commentEl.className = 'p-3 bg-white/5 rounded';
+          commentEl.innerHTML = `
+            <div class="font-medium">${comment.name}</div>
+            <div class="text-sm">${comment.text}</div>
+          `;
+          this.commentsList.appendChild(commentEl);
+        });
+      }
+
+      addComment() {
+        const name = this.cName.value.trim() || 'Anonymous';
+        const text = this.cText.value.trim();
+        
+        if (!text) return;
+        
+        this.dataManager.state.comments.push({ name, text });
+        this.dataManager.saveState();
+        this.renderComments();
+        
+        this.cName.value = '';
+        this.cText.value = '';
+      }
+
+      clearAllComments() {
+        this.dataManager.state.comments = [];
+        this.dataManager.saveState();
+        this.renderComments();
+      }
+    }
 
     // ======== Message Manager ========
     class MessageManager {
@@ -588,12 +668,12 @@
     document.addEventListener('DOMContentLoaded', () => {
       const dataManager = new DataManager();
       PopupManager.init();
-      GreetingManager.init();
       new FeedManager(dataManager);
       new CommentsManager(dataManager);
       new MessageManager(dataManager);
     });
   </script>
+
   <!-- Component Scripts -->
   <script src="data.js"></script>
   <script src="ui-components.js"></script>
