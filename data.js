@@ -45,8 +45,8 @@
         { id: 16, image: './IMAGES/D2.jpeg', title: 'Creation 2', role: 'developer' },
         { id: 17, image: './IMAGES/D3.jpeg', title: 'Creation 3', role: 'developer' },
         { id: 16, image: './IMAGES/D4.jpeg', title: 'Creation 4', role: 'developer' },
-        { id: 17, image: './IMAGES/D6.jpeg', title: 'Creation 5', role: 'developer' },
-        { id: 16, image: './IMAGES/D5.jpeg', title: 'Creation 6', role: 'developer' },
+        { id: 17, image: './IMAGES/D5.jpeg', title: 'Creation 5', role: 'developer' },
+        { id: 16, image: './IMAGES/D6.jpeg', title: 'Creation 6', role: 'developer' },
 
         //consultant
         { id: 19, image: './g', title: 'Creation ', role: 'consultant' },
