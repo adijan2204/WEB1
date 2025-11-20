@@ -4,9 +4,9 @@
     this.state = {
       feed: [
         { id: 1, image: './IMAGES/1.jpeg', title: 'Creation 1', role: 'writer' },
-        { id: 16, image: './IMAGES/16.jpeg', title: 'Creation 1', role: 'developer' },
+        { id: 16, image: './IMAGES/D1.jpeg', title: 'Creation 1', role: 'developer' },
         { id: 16, image: './IMAGES/a1.jpg', title: 'Creation 1', role: 'artist' },
-        { id: 18, image: './IMAGES/18.jpeg', title: 'Creationt 1', role: 'consultant' },
+        { id: 18, image: './IMAGES.jpeg', title: 'Creationt 1', role: 'consultant' },
 
         
         //Artist
@@ -41,11 +41,15 @@
         { id: 4, image: './IMAGES/16.jpeg', title: 'Creation 16', role: 'writer' },
         
         //Developer
-        { id: 17, image: './IMAGES/17.jpeg', title: 'Creation 2', role: 'developer' },
-        { id: 16, image: './IMAGES/16.jpeg', title: 'Code Project 1', role: 'developer' },
+        
+        { id: 16, image: './IMAGES/D2.jpeg', title: 'Creation 2', role: 'developer' },
+        { id: 17, image: './IMAGES/D3.jpeg', title: 'Creation 3', role: 'developer' },
+        { id: 16, image: './IMAGES/D4.jpeg', title: 'Creation 4', role: 'developer' },
+        { id: 17, image: './IMAGES/D6.jpeg', title: 'Creation 5', role: 'developer' },
+        { id: 16, image: './IMAGES/D5.jpeg', title: 'Creation 6', role: 'developer' },
 
         //consultant
-        { id: 19, image: './IMAGES/19.jpeg', title: 'Creation 2', role: 'consultant' },
+        { id: 19, image: './g', title: 'Creation ', role: 'consultant' },
        
        
       ],
